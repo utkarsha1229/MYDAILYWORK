@@ -1,0 +1,125 @@
+TASK 4 :- Build a simple console-based to-do list manager that allows users to add, view, and delete tasks Task Input: Allow users to input tasks they want to add to the list. Add Task: Implement a function to add tasks to the list. View Tasks: Display the list of tasks with their status (completed or pending). Mark Task as Completed: Allow users to mark tasks as completed. Remove Task: Provide an option to remove tasks from the list.
+
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class Task {
+public:
+    string description;  // Task description
+    bool completed;      // Task status (completed or pending)
+
+    // Constructor to initialize a new task
+    Task(string desc) {
+        description = desc;
+        completed = false;  // Tasks are pending by default
+    }
+};
+
+class ToDoList {
+private:
+    vector<Task> tasks;  // Vector to store the list of tasks
+
+public:
+    // Function to add a new task
+    void addTask() {
+        string taskDescription;
+        cout << "\n📝 Enter the description of the task: ";
+        cin.ignore();  // To avoid input issues after using 'cin' for other operations
+        getline(cin, taskDescription);
+        tasks.push_back(Task(taskDescription));  // Add the new task to the list
+        cout << "\n✅ Task added successfully!\n";
+    }
+
+    // Function to view the list of tasks
+    void viewTasks() {
+        cout << "\n--------- 📋 Your To-Do List 📋 ---------\n";
+        if (tasks.empty()) {
+            cout << "🌟 No tasks in your to-do list. You're all caught up! 🌟\n";
+        } else {
+            for (int i = 0; i < tasks.size(); i++) {
+                cout << i + 1 << ". " << tasks[i].description << " ["
+                     << (tasks[i].completed ? "✅ Completed" : "❌ Pending") << "]\n";
+            }
+        }
+        cout << "------------------------------------------\n";
+    }
+
+    // Function to mark a task as completed
+    void markTaskCompleted() {
+        viewTasks();  // Show tasks to the user
+        if (tasks.empty()) return;
+
+        int taskNumber;
+        cout << "\n✔️ Enter the task number to mark as completed: ";
+        cin >> taskNumber;
+
+        if (taskNumber > 0 && taskNumber <= tasks.size()) {
+            tasks[taskNumber - 1].completed = true;
+            cout << "\n🎉 Task " << taskNumber << " marked as completed!\n";
+        } else {
+            cout << "\n⚠️ Invalid task number! Please try again.\n";
+        }
+    }
+
+    // Function to remove a task from the list
+    void removeTask() {
+        viewTasks();  // Show tasks to the user
+        if (tasks.empty()) return;
+
+        int taskNumber;
+        cout << "\n🗑️ Enter the task number to remove: ";
+        cin >> taskNumber;
+
+        if (taskNumber > 0 && taskNumber <= tasks.size()) {
+            tasks.erase(tasks.begin() + (taskNumber - 1));  // Remove the selected task
+            cout << "\n🗑️ Task " << taskNumber << " removed successfully!\n";
+        } else {
+            cout << "\n⚠️ Invalid task number! Please try again.\n";
+        }
+    }
+};
+
+void displayMenu() {
+    cout << "\n-------- 📝 To-Do List Manager 📝 --------\n";
+    cout << "1️⃣  Add Task\n";
+    cout << "2️⃣  View Tasks\n";
+    cout << "3️⃣  Mark Task as Completed\n";
+    cout << "4️⃣  Remove Task\n";
+    cout << "5️⃣  Exit\n";
+    cout << "-----------------------------------------\n";
+    cout << "👉 Enter your choice: ";
+}
+
+int main() {
+    ToDoList toDoList;
+    int choice;
+
+    do {
+        displayMenu();
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                toDoList.addTask();
+                break;
+            case 2:
+                toDoList.viewTasks();
+                break;
+            case 3:
+                toDoList.markTaskCompleted();
+                break;
+            case 4:
+                toDoList.removeTask();
+                break;
+            case 5:
+                cout << "\n👋 Exiting the To-Do List Manager. Have a great day!\n";
+                break;
+            default:
+                cout << "\n⚠️ Invalid choice! Please enter a valid option.\n";
+        }
+    } while (choice != 5);  // Continue until the user chooses to exit
+
+    return 0;
+}
