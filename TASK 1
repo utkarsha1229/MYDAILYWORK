@@ -1,0 +1,79 @@
+TASK 1:- Create a program that generates a random number and asks the user to guess it. Provide feedback on whether the guess is too high or too low until the user guesses the correct number
+
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+class Random {
+private:
+    int randomNumber; // Random number between 1 and 100
+    int guess;        // User's guess
+    int attempts;     // Track the number of attempts
+
+public:
+    // Constructor to initialize values
+    Random() {
+        std::srand(std::time(0));
+        randomNumber = std::rand() % 100 + 1;
+        guess = 0;
+        attempts = 0;
+    }
+
+    // Function to play the game
+    void play() {
+        cout << "--------LET'S PLAY A NUMBER GUESSING GAME---------\n";
+        cout << "I have created a number between 1 and 100.\n";
+        cout << "You have to guess it correctly!\n";
+
+        while (true) {
+            cout << "\nEnter Your Guess: ";
+            cin >> guess;
+            attempts++;  // Increment attempt count
+
+            if (guess > randomNumber) {
+                cout << "Too high!!!\n";
+                motivate();
+            } 
+            else if (guess < randomNumber) {
+                cout << "Too low!!!\n";
+                motivate();
+            } 
+            else {
+                cout << "\nCONGRATULATIONS! You guessed it correctly in " << attempts << " attempts!\n";
+                break;
+            }
+        }
+
+        // Show message based on attempts
+        finalMessage();
+    }
+
+    // Function to give motivational feedback
+    void motivate() {
+        if (attempts <= 3) {
+            cout << "You're getting close! Keep going!\n";
+        } else if (attempts > 3 && attempts <= 6) {
+            cout << "You're doing well! Don't give up!\n";
+        } else {
+            cout << "It's a tricky one, but you can do it!\n";
+        }
+    }
+
+    // Final message based on number of attempts
+    void finalMessage() {
+        if (attempts <= 3) {
+            cout << "Amazing! You have a sharp mind!\n";
+        } else if (attempts <= 6) {
+            cout << "Great job! You did it in a decent number of attempts!\n";
+        } else {
+            cout << "Good effort! It took you a few tries, but persistence wins!\n";
+        }
+    }
+};
+
+int main() {
+    Random number;
+    number.play();
+    return 0;
+}
