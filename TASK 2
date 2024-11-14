@@ -1,0 +1,118 @@
+TASK 2 ➖Develop a calculator program that performs basic arithmetic
+operations such as addition, subtraction, multiplication, and
+division. Allow the user to input two numbers and choose an
+operation to perform.
+
+
+
+#include<iostream>
+using namespace std;
+
+class Calculator
+{
+    public:
+       double num1, num2;  // Two numbers for performing operations
+       
+       // Constructor to initialize values and display welcome message
+       Calculator(){
+           num1 = 0;
+           num2 = 0;
+           cout << "------------------------------------------\n";
+           cout << "  WELCOME TO THE CALCULATOR MACHINE  \n";
+           cout << "------------------------------------------\n";
+       }
+       
+       // Function declarations
+       void add();
+       void sub();
+       void multiplication();
+       void division();
+};
+
+// Function to perform addition
+void Calculator::add()
+{
+    double res = num1 + num2;
+    cout << "Result of Addition = " << res;
+}
+ 
+// Function to perform subtraction
+void Calculator::sub()
+{
+    double res = num1 - num2;
+    cout << "Result of Subtraction = " << res;
+}
+ 
+// Function to perform multiplication
+void Calculator::multiplication()
+{
+    double res = num1 * num2;
+    cout << "Result of Multiplication = " << res;
+}
+ 
+// Function to perform division
+void Calculator::division()
+{
+    // Check for division by zero
+    if (num2 == 0) {
+        cout << "Error: Division by zero is not allowed.";
+    } else {
+        double res = num1 / num2;
+        cout << "Result of Division = " << res;
+    }
+}
+
+int main()
+{
+    Calculator obj;  // Create a Calculator object
+    
+    // Input two numbers from the user
+    cout << "\nEnter two numbers for operation: ";
+    cin >> obj.num1 >> obj.num2;
+    
+    int choice;
+    
+    do {
+        // Display menu options
+        cout << "\n------------------------------------------";
+        cout << "\nSelect an operation:";
+        cout << "\n1. Addition\n2. Subtraction\n3. Multiplication\n4. Division\n5. Exit\n";
+        cout << "\nYour choice: ";
+        cin >> choice;
+        cout << "------------------------------------------\n";
+        
+        // Perform operation based on user's choice
+        switch(choice) {
+            case 1:
+              cout << "You selected Addition.\n";
+              obj.add();
+              break;
+              
+            case 2:
+              cout << "You selected Subtraction.\n";
+              obj.sub();
+              break;
+              
+            case 3:
+              cout << "You selected Multiplication.\n";
+              obj.multiplication();
+              break;
+            
+            case 4:
+              cout << "You selected Division.\n";
+              obj.division();
+              break;
+              
+            case 5:
+              cout << "\nThank you for using the calculator!\n";
+              cout << "Exiting...\n";
+              break;
+           
+            default:
+              cout << "\nInvalid choice. Please try again.\n";
+        }
+        
+    } while(choice != 5);  // Repeat until user chooses to exit
+    
+    return 0;
+}
