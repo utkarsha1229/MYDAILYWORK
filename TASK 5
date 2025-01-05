@@ -1,0 +1,263 @@
+Develop a system to manage books, borrowers, and transactions in a
+library.
+
+Book Database: Store book information (title, author, ISBN) in a database.
+Book Search: Allow users to search for books based on title, author, or ISBN.
+Book Checkout: Enable librarians to check out books to borrowers.
+Book Return: Record book returns and update availability status.
+Fine Calculation: Implement a fine calculation system for overdue books.
+User Interface: Design a user-friendly interface for easy interaction.
+
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <ctime>
+
+using namespace std;
+
+// Class representing a book in the library
+class Book {
+public:
+    string title;
+    string author;
+    string ISBN;
+    bool isAvailable;
+
+    // Constructor to initialize book details
+    Book(string t, string a, string isbn) {
+        title = t;
+        author = a;
+        ISBN = isbn;
+        isAvailable = true;  // Initially, the book is available
+    }
+
+    // Function to display book details
+    void displayBook() {
+        cout << "Title: " << title << ", Author: " << author << ", ISBN: " << ISBN
+             << ", Available: " << (isAvailable ? "Yes" : "No") << endl;
+    }
+};
+
+// Class representing a borrower
+class Borrower {
+public:
+    string name;
+    string borrowerID;
+    string borrowedBookISBN;
+    time_t borrowDate;
+
+    // Constructor to initialize borrower details
+    Borrower(string n, string id) {
+        name = n;
+        borrowerID = id;
+        borrowedBookISBN = "";
+    }
+
+    // Function to check if the borrower has a borrowed book
+    bool hasBorrowedBook() {
+        return !borrowedBookISBN.empty();
+    }
+};
+
+// Class representing the library system
+class Library {
+private:
+    vector<Book> books;  // List of books in the library
+    vector<Borrower> borrowers;  // List of borrowers
+
+public:
+    // Function to add a book to the library
+    void addBook(string title, string author, string ISBN) {
+        books.push_back(Book(title, author, ISBN));
+    }
+
+    // Function to search for a book by title, author, or ISBN
+    void searchBook() {
+        string searchTerm;
+        cout << "Enter search term (title, author, or ISBN): ";
+        cin.ignore();
+        getline(cin, searchTerm);
+
+        bool found = false;
+        for (const auto& book : books) {
+            if (book.title == searchTerm || book.author == searchTerm || book.ISBN == searchTerm) {
+                book.displayBook();
+                found = true;
+            }
+        }
+
+        if (!found) {
+            cout << "No book found with the given search term." << endl;
+        }
+    }
+
+    // Function to checkout a book to a borrower
+    void checkoutBook() {
+        string borrowerID, ISBN;
+        cout << "Enter Borrower ID: ";
+        cin >> borrowerID;
+
+        bool borrowerExists = false;
+        Borrower* borrower = nullptr;
+        for (auto& b : borrowers) {
+            if (b.borrowerID == borrowerID) {
+                borrowerExists = true;
+                borrower = &b;
+                break;
+            }
+        }
+
+        if (!borrowerExists) {
+            cout << "Borrower not found. Please add borrower first." << endl;
+            return;
+        }
+
+        cout << "Enter ISBN of the book to checkout: ";
+        cin >> ISBN;
+
+        for (auto& book : books) {
+            if (book.ISBN == ISBN && book.isAvailable) {
+                book.isAvailable = false;
+                borrower->borrowedBookISBN = ISBN;
+                borrower->borrowDate = time(0);  // Record borrow date
+                cout << "Book checked out successfully!" << endl;
+                return;
+            }
+        }
+
+        cout << "Book not available or invalid ISBN." << endl;
+    }
+
+    // Function to return a book
+    void returnBook() {
+        string borrowerID;
+        cout << "Enter Borrower ID: ";
+        cin >> borrowerID;
+
+        bool borrowerExists = false;
+        Borrower* borrower = nullptr;
+        for (auto& b : borrowers) {
+            if (b.borrowerID == borrowerID && b.hasBorrowedBook()) {
+                borrowerExists = true;
+                borrower = &b;
+                break;
+            }
+        }
+
+        if (!borrowerExists) {
+            cout << "No borrowed book found for this borrower." << endl;
+            return;
+        }
+
+        string ISBN = borrower->borrowedBookISBN;
+        for (auto& book : books) {
+            if (book.ISBN == ISBN) {
+                book.isAvailable = true;
+                borrower->borrowedBookISBN = "";  // Clear borrowed book record
+                cout << "Book returned successfully!" << endl;
+                return;
+            }
+        }
+    }
+
+    // Function to calculate the fine for overdue books
+    void calculateFine() {
+        string borrowerID;
+        cout << "Enter Borrower ID: ";
+        cin >> borrowerID;
+
+        bool borrowerExists = false;
+        Borrower* borrower = nullptr;
+        for (auto& b : borrowers) {
+            if (b.borrowerID == borrowerID && b.hasBorrowedBook()) {
+                borrowerExists = true;
+                borrower = &b;
+                break;
+            }
+        }
+
+        if (!borrowerExists) {
+            cout << "No borrowed book found for this borrower." << endl;
+            return;
+        }
+
+        time_t currentTime = time(0);
+        double overdueDays = difftime(currentTime, borrower->borrowDate) / (60 * 60 * 24);  // Convert time to days
+        if (overdueDays > 14) {  // Assuming 14 days is the borrowing limit
+            double fine = (overdueDays - 14) * 1.0;  // Fine of 1 unit per day
+            cout << "Fine for overdue book: " << fine << endl;
+        } else {
+            cout << "No fine. Book is within the borrowing period." << endl;
+        }
+    }
+
+    // Function to add a borrower to the system
+    void addBorrower(string name, string borrowerID) {
+        borrowers.push_back(Borrower(name, borrowerID));
+    }
+};
+
+// Main function to drive the menu-based system
+int main() {
+    Library library;
+    int choice;
+
+    do {
+        cout << "\nLibrary Management System\n";
+        cout << "1. Add Book\n";
+        cout << "2. Search Book\n";
+        cout << "3. Checkout Book\n";
+        cout << "4. Return Book\n";
+        cout << "5. Calculate Fine\n";
+        cout << "6. Add Borrower\n";
+        cout << "7. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                string title, author, ISBN;
+                cout << "Enter book title: ";
+                cin.ignore();
+                getline(cin, title);
+                cout << "Enter author name: ";
+                getline(cin, author);
+                cout << "Enter ISBN: ";
+                getline(cin, ISBN);
+                library.addBook(title, author, ISBN);
+                break;
+            }
+            case 2:
+                library.searchBook();
+                break;
+            case 3:
+                library.checkoutBook();
+                break;
+            case 4:
+                library.returnBook();
+                break;
+            case 5:
+                library.calculateFine();
+                break;
+            case 6: {
+                string name, borrowerID;
+                cout << "Enter borrower name: ";
+                cin.ignore();
+                getline(cin, name);
+                cout << "Enter borrower ID: ";
+                getline(cin, borrowerID);
+                library.addBorrower(name, borrowerID);
+                break;
+            }
+            case 7:
+                cout << "Exiting the system..." << endl;
+                break;
+            default:
+                cout << "Invalid choice! Please try again." << endl;
+        }
+
+    } while (choice != 7);
+
+    return 0;
+}
